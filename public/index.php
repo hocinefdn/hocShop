@@ -1,5 +1,11 @@
 <?php
 
+// FORCE PHP À TOUT AFFICHER À L'ÉCRAN
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Core\Container;
@@ -43,20 +49,33 @@ $container->set(\Symfony\Component\Validator\Validator\ValidatorInterface::class
 $router = new \Bramus\Router\Router();
 
 // Exemple de Middleware Global ou de groupe pour l'authentification (Étape 3)
-$router->before('GET|POST|PUT|DELETE', '/api/.*', function () use ($container) {
-    $request = $container->get(Request::class);
-    $token = $request->headers->get('Authorization');
+// $router->before('GET|POST|PUT|DELETE', '/api/.*', function () use ($container) {
+//     $request = $container->get(Request::class);
+//     $token = $request->headers->get('Authorization');
 
-    if (!$token || $token !== 'Bearer ' . ($_ENV['API_TOKEN'] ?? 'secret_token')) {
-        throw new \App\Exception\HttpException("Unauthorized", 401);
-    }
+//     if (!$token || $token !== 'Bearer ' . ($_ENV['API_TOKEN'] ?? 'secret_token')) {
+//         throw new \App\Exception\HttpException("Unauthorized", 401);
+//     }
+// });
+
+
+$router->get('/api/hello', function () use ($container) {
+
+    // Affiche les détails de la requête pour vérification
+
+    $response = JsonResponse::createStandard([
+        'message' => 'Hello World!',
+        'status' => 'API is running smoothly'
+    ], 200);
+
+    $response->send();
 });
 
 // Définition des routes CRUD Magasins
 $router->mount('/api/stores', function () use ($router, $container) {
 
     // Route de test Hello World
-    $router->get('/api/hello', function () use ($container) {
+    $router->get('hello', function () use ($container) {
         // On utilise directement notre réponse standardisée
         $response = JsonResponse::createStandard([
             'message' => 'Hello World!',
@@ -65,6 +84,15 @@ $router->mount('/api/stores', function () use ($router, $container) {
 
         $response->send();
     });
+});
+
+// Route par défaut pour la racine /
+$router->get('/', function () {
+    $response = JsonResponse::createStandard([
+        'message' => 'Bienvenue sur l\'API WSHOP.',
+        'documentation' => 'Consultez le README pour voir les endpoints disponibles.'
+    ], 200);
+    $response->send();
 });
 
 // Run le routeur

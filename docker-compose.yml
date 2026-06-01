@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  # Le serveur Web (Nginx)
+  nginx:
+    image: nginx:alpine
+    container_name: hocshop_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+
+  # L'application (PHP-FPM)
+  app:
+    build: .
+    container_name: hocshop_app
+    volumes:
+      - .:/var/www/html
+    environment:
+      - DB_HOST=db
+      - DB_NAME=wshop_db
+      - DB_USER=root
+      - DB_PASS=root
+      - APP_ENV=development
+
+  # La Base de données (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: hocshop_db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=wshop_db
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
