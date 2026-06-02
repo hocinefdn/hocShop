@@ -44,16 +44,35 @@ $container->set(\Symfony\Component\Validator\Validator\ValidatorInterface::class
 // 3. Routage avec Bramus Router
 $router = new \Bramus\Router\Router();
 
-// Exemple de Middleware Global ou de groupe pour l'authentification
+// ROUTE PUBLIQUE : Login pour obtenir le JWT
+$router->post('/api/login', function () use ($container) {
+    (new App\User\AuthController($container))->login();
+});
 
-// $router->before('GET|POST|PUT|DELETE', '/api/.*', function () use ($container) {
-//     $request = $container->get(Request::class);
-//     $token = $request->headers->get('Authorization');
+// MIDDLEWARE GLOBAL SÉCURISÉ (JWT)
+$router->before('GET|POST|PUT|DELETE', '/api/stores.*', function () use ($container) {
+    $request = $container->get(Request::class);
+    $authHeader = $request->headers->get('Authorization');
 
-//     if (!$token || $token !== 'Bearer ' . ($_ENV['API_TOKEN'] ?? 'secret_token')) {
-//         throw new \App\Exception\HttpException("Unauthorized", 401);
-//     }
-// });
+    if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+        JsonResponse::createStandard(['message' => 'Authentification requise (Bearer token requis).'], 401, 'error')->send();
+        exit;
+    }
+
+    $token = substr($authHeader, 7);
+
+    // Validation dynamique via notre AuthService
+    $authService = new \App\Service\AuthService();
+    $decodedPayload = $authService->validateToken($token);
+
+    if (!$decodedPayload) {
+        JsonResponse::createStandard(['message' => 'Accès refusé : Token invalide ou expiré.'], 403, 'error')->send();
+        exit;
+    }
+
+    // Optionnel : Tu peux injecter les infos du User connecté dans l'environnement si besoin
+    $request->attributes->set('auth_user', $decodedPayload);
+});
 
 
 
