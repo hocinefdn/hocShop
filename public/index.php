@@ -49,28 +49,37 @@ $router->post('/api/login', function () use ($container) {
     (new App\User\AuthController($container))->login();
 });
 
-// MIDDLEWARE GLOBAL SÉCURISÉ (JWT)
+
+// GLOBAL SECURED MIDDLEWARE (JWT)
 $router->before('GET|POST|PUT|DELETE', '/api/stores.*', function () use ($container) {
     $request = $container->get(Request::class);
     $authHeader = $request->headers->get('Authorization');
 
+    // 1. Check if the Authorization header is present and valid
     if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
-        JsonResponse::createStandard(['message' => 'Authentification requise (Bearer token requis).'], 401, 'error')->send();
+        JsonResponse::createStandard([
+            'message' => 'Authentification requise (Bearer token requis).'
+        ], 401, 'error')->send();
+
         exit;
     }
 
     $token = substr($authHeader, 7);
 
-    // Validation dynamique via notre AuthService
+    // 2. Dynamically validate JWT via AuthService
     $authService = new \App\Service\AuthService();
     $decodedPayload = $authService->validateToken($token);
 
+    // 3. Handle invalid or expired token
     if (!$decodedPayload) {
-        JsonResponse::createStandard(['message' => 'Accès refusé : Token invalide ou expiré.'], 403, 'error')->send();
+        JsonResponse::createStandard([
+            'message' => 'Accès refusé : Token invalide ou expiré.'
+        ], 403, 'error')->send();
+
         exit;
     }
 
-    // Optionnel : Tu peux injecter les infos du User connecté dans l'environnement si besoin
+    // Attach authenticated user payload to request attributes
     $request->attributes->set('auth_user', $decodedPayload);
 });
 
