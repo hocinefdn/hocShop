@@ -42,8 +42,10 @@ class StoreApiTest extends TestCase
     }
 
     /**
-     * Helper to build standard authentication headers
+     * Helper to build standard authentication headers 
+     * @return array<string, string>
      */
+
     private function getHeaders(): array
     {
         return [

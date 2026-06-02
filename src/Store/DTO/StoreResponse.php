@@ -25,8 +25,10 @@ class StoreResponse
         $this->createdAt = $store->createdAt ?? date('Y-m-d H:i:s');
     }
 
+
     /**
      * Convert the output DTO properties into a standard array format for JSON responses
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -43,7 +45,9 @@ class StoreResponse
 
     /**
      * Helper method to map a collection of Store entities into an array of response DTO arrays
+     *
      * @param Store[] $stores
+     * @return array<int, array<string, mixed>>
      */
     public static function fromCollection(array $stores): array
     {

@@ -10,9 +10,8 @@ class ExceptionHandler
     public static function register(): void
     {
         set_exception_handler([self::class, 'handleException']);
-        set_error_handler(function ($severity, $message, $file, $line) {
-            if (!(error_reporting() & $severity)) return;
-            throw new \ErrorException($message, 0, $severity, $file, $line);
+        set_error_handler(function (int $errno, string $errstr, ?string $errfile = null, ?int $errline = null): bool {
+            throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
         });
     }
 

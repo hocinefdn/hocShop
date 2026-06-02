@@ -4,7 +4,10 @@ namespace App\Core;
 
 class Container
 {
+    /** @var array<string, \Closure|string> */
     private array $services = [];
+
+    /** @var array<string, mixed> */
     private array $instances = [];
 
     public function set(string $id, callable $callable): void

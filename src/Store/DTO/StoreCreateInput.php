@@ -22,6 +22,9 @@ class StoreCreateInput
 
     public bool $isActive;
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function __construct(array $data)
     {
         $this->name = trim($data['name'] ?? '');

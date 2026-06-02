@@ -34,6 +34,9 @@ class AuthService
 
     /**
      * Valide et décode un token. Retourne le payload ou null si invalide/expiré
+     *
+     * @param string $token
+     * @return array<string, mixed>|null
      */
     public function validateToken(string $token): ?array
     {
@@ -41,7 +44,7 @@ class AuthService
             $decoded = JWT::decode($token, new Key($this->secretKey, 'HS256'));
             return (array) $decoded;
         } catch (\Exception $e) {
-            return null; // Token expiré, signature invalide, etc.
+            return null;
         }
     }
 }

@@ -29,10 +29,10 @@ class StoreRepository
 
     /**
      * Find all stores with dynamic filtering and sorting
-     * @param array $filters Query parameters for filtering (e.g., ['city' => 'Paris', 'is_active' => true])
+     * @param array<string, mixed> $filters Query parameters for filtering (e.g., ['city' => 'Paris', 'is_active' => true])
      * @param string $sort Field to sort by
-     * @param string $direction Sort direction ('ASC' or 'DESC')
-     * @return array
+     * @param string $direction Sort direction ('ASC' or 'DESC')  
+     * @return Store[]
      */
     public function findAll(array $filters = [], string $sort = 'id', string $direction = 'ASC'): array
     {

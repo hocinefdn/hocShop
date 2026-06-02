@@ -22,6 +22,9 @@ class StoreUpdateInput
 
     public bool $isActive;
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function __construct(array $data, \App\Store\Store $currentStore)
     {
         // Fallback to current entity values if the key is missing in the request payload

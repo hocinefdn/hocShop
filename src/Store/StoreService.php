@@ -18,7 +18,13 @@ class StoreService
 
     /**
      * Fetch all stores with filters and sorting rules
+     * 
+     * @param array<string, mixed> $filters
+     * @param string $sort
+     * @param string $direction
+     * @return Store[]
      */
+
     public function getStoreList(array $filters = [], string $sort = 'id', string $direction = 'ASC'): array
     {
         return $this->repository->findAll($filters, $sort, $direction);
@@ -91,22 +97,6 @@ class StoreService
         $this->repository->delete($id);
     }
 
-    /**
-     * Centralized validation checker throwing explicit descriptive exceptions
-     * @throws \InvalidArgumentException Containing JSON encoded array string of violations
-     */
-    private function validateEntity(Store $store): void
-    {
-        $errors = $this->validator->validate($store);
-
-        if (count($errors) > 0) {
-            $validationErrors = [];
-            foreach ($errors as $error) {
-                $validationErrors[$error->getPropertyPath()] = $error->getMessage();
-            }
-            throw new \InvalidArgumentException(json_encode($validationErrors));
-        }
-    }
 
 
     /**
