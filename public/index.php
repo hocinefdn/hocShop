@@ -1,11 +1,5 @@
 <?php
 
-// FORCE PHP À TOUT AFFICHER À L'ÉCRAN
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Core\Container;
@@ -42,7 +36,9 @@ $container->set(\PDO::class, function () {
 
 // Injection du Symfony Validator
 $container->set(\Symfony\Component\Validator\Validator\ValidatorInterface::class, function () {
-    return \Symfony\Component\Validator\Validation::createValidator();
+    return \Symfony\Component\Validator\Validation::createValidatorBuilder()
+        ->enableAttributeMapping()
+        ->getValidator();
 });
 
 // 3. Routage avec Bramus Router
@@ -59,30 +55,18 @@ $router = new \Bramus\Router\Router();
 // });
 
 
-$router->get('/api/hello', function () use ($container) {
-
-    // Affiche les détails de la requête pour vérification
-
-    $response = JsonResponse::createStandard([
-        'message' => 'Hello World!',
-        'status' => 'API is running smoothly'
-    ], 200);
-
-    $response->send();
-});
 
 // Définition des routes CRUD Magasins
 $router->mount('/api/stores', function () use ($router, $container) {
 
-    // Route de test Hello World
-    $router->get('hello', function () use ($container) {
-        // On utilise directement notre réponse standardisée
-        $response = JsonResponse::createStandard([
-            'message' => 'Hello World!',
-            'status' => 'API is running smoothly'
-        ], 200);
+    // GET /api/stores
+    $router->get('/', function () use ($container) {
+        (new App\Controller\StoreController($container))->index();
+    });
 
-        $response->send();
+    // POST /api/stores
+    $router->post('/', function () use ($container) {
+        (new App\Controller\StoreController($container))->create();
     });
 });
 
