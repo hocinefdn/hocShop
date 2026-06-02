@@ -23,14 +23,27 @@ class StoreController
     }
 
     /**
+     * GET /api/stores
+     * Liste tous les magasins
+     */
+    public function index(): void
+    {
+        $stores = $this->storeRepository->findAll();
+
+        $data = array_map(function (Store $store) {
+            return $store->toArray();
+        }, $stores);
+
+        JsonResponse::createStandard($data, 200)->send();
+    }
+
+    /**
      * POST /api/stores
      */
     public function create(): void
     {
-        // 1. Récupérer et décoder le body JSON de Symfony
         $content = json_decode($this->request->getContent(), true) ?? [];
 
-        // 2. Hydrater l'entité Store avec les données reçues
         $store = new Store(
             null,
             $content['name'] ?? '',
@@ -40,27 +53,21 @@ class StoreController
             $content['is_active'] ?? true
         );
 
-        // 3. Valider l'entité avec le Validator de Symfony
         $violations = $this->validator->validate($store);
 
         if (count($violations) > 0) {
             $errors = [];
             foreach ($violations as $violation) {
-                // Associe le champ à son message d'erreur
                 $errors[$violation->getPropertyPath()] = $violation->getMessage();
             }
 
-            // On renvoie un code 400 standardisé avec la liste propre des erreurs
             JsonResponse::createStandard($errors, 400, 'error')->send();
+            return;
         }
 
-        // 4. Sauvegarde si tout est valide
         $savedStore = $this->storeRepository->save($store);
-
-        // 5. Réponse 21 Created
         JsonResponse::createStandard($savedStore->toArray(), 201)->send();
     }
-
 
     /**
      * GET /api/stores/{id}
@@ -71,6 +78,7 @@ class StoreController
 
         if (!$store) {
             JsonResponse::createStandard(['message' => 'Magasin introuvable.'], 404, 'error')->send();
+            return;
         }
 
         JsonResponse::createStandard($store->toArray(), 200)->send();
@@ -85,18 +93,17 @@ class StoreController
 
         if (!$store) {
             JsonResponse::createStandard(['message' => 'Magasin introuvable.'], 404, 'error')->send();
+            return;
         }
 
         $content = json_decode($this->request->getContent(), true) ?? [];
 
-        // Mise à jour des propriétés de l'entité existante
         $store->name = $content['name'] ?? $store->name;
         $store->address = $content['address'] ?? $store->address;
         $store->postalCode = $content['postal_code'] ?? $store->postalCode;
         $store->city = $content['city'] ?? $store->city;
         $store->isActive = $content['is_active'] ?? $store->isActive;
 
-        // Validation des nouvelles données
         $violations = $this->validator->validate($store);
         if (count($violations) > 0) {
             $errors = [];
@@ -104,6 +111,7 @@ class StoreController
                 $errors[$violation->getPropertyPath()] = $violation->getMessage();
             }
             JsonResponse::createStandard($errors, 400, 'error')->send();
+            return;
         }
 
         $this->storeRepository->update($store);
@@ -119,6 +127,7 @@ class StoreController
 
         if (!$store) {
             JsonResponse::createStandard(['message' => 'Magasin introuvable.'], 404, 'error')->send();
+            return;
         }
 
         $this->storeRepository->delete($id);

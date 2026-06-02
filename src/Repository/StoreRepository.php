@@ -28,6 +28,30 @@ class StoreRepository
     }
 
     /**
+     * Get list of stores with optional pagination
+     */
+    public function findAll(): array
+    {
+        $stmt = $this->pdo->query("SELECT * FROM stores ORDER BY id DESC");
+        $rows = $stmt->fetchAll();
+
+        $stores = [];
+        foreach ($rows as $row) {
+            $stores[] = new Store(
+                (int)$row['id'],
+                $row['name'],
+                $row['address'],
+                $row['postal_code'],
+                $row['city'],
+                (bool)$row['is_active'],
+                $row['created_at']
+            );
+        }
+
+        return $stores;
+    }
+
+    /**
      * Trouver un magasin par son ID
      */
     public function find(int $id): ?Store
