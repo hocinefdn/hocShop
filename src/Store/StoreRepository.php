@@ -28,14 +28,54 @@ class StoreRepository
     }
 
     /**
-     * Get list of stores with optional pagination
+     * Find all stores with dynamic filtering and sorting
+     * @param array $filters Query parameters for filtering (e.g., ['city' => 'Paris', 'is_active' => true])
+     * @param string $sort Field to sort by
+     * @param string $direction Sort direction ('ASC' or 'DESC')
+     * @return array
      */
-    public function findAll(): array
+    public function findAll(array $filters = [], string $sort = 'id', string $direction = 'ASC'): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM stores ORDER BY id DESC");
-        $rows = $stmt->fetchAll();
+        // 1. Base query
+        $sql = "SELECT * FROM stores WHERE 1=1";
+        $parameters = [];
 
+        // 2. Dynamic Filtering
+        if (!empty($filters['city'])) {
+            $sql .= " AND city = :city";
+            $parameters['city'] = $filters['city'];
+        }
+
+        if (isset($filters['is_active']) && $filters['is_active'] !== '') {
+            $sql .= " AND is_active = :is_active";
+            $parameters['is_active'] = (int)$filters['is_active'];
+        }
+
+        if (!empty($filters['postal_code'])) {
+            $sql .= " AND postal_code = :postal_code";
+            $parameters['postal_code'] = $filters['postal_code'];
+        }
+
+        // 3. Whitelisting Sort Fields to prevent SQL Injection
+        $allowedSortFields = ['id', 'name', 'city', 'postal_code', 'created_at'];
+        if (!in_array($sort, $allowedSortFields)) {
+            $sort = 'id';
+        }
+
+        // 4. Whitelisting Sort Direction
+        $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        // 5. Append Order By clause safely using whitelisted values
+        $sql .= " ORDER BY {$sort} {$direction}";
+
+        // 6. Execute prepared statement
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($parameters);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stores = [];
+
+
         foreach ($rows as $row) {
             $stores[] = new Store(
                 (int)$row['id'],
@@ -50,7 +90,6 @@ class StoreRepository
 
         return $stores;
     }
-
     /**
      * Trouver un magasin par son ID
      */
