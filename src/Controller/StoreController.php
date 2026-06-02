@@ -61,5 +61,67 @@ class StoreController
         JsonResponse::createStandard($savedStore->toArray(), 201)->send();
     }
 
-    // Conserve ton ancienne méthode index() ici...
+
+    /**
+     * GET /api/stores/{id}
+     */
+    public function show(int $id): void
+    {
+        $store = $this->storeRepository->find($id);
+
+        if (!$store) {
+            JsonResponse::createStandard(['message' => 'Magasin introuvable.'], 404, 'error')->send();
+        }
+
+        JsonResponse::createStandard($store->toArray(), 200)->send();
+    }
+
+    /**
+     * PUT /api/stores/{id}
+     */
+    public function update(int $id): void
+    {
+        $store = $this->storeRepository->find($id);
+
+        if (!$store) {
+            JsonResponse::createStandard(['message' => 'Magasin introuvable.'], 404, 'error')->send();
+        }
+
+        $content = json_decode($this->request->getContent(), true) ?? [];
+
+        // Mise à jour des propriétés de l'entité existante
+        $store->name = $content['name'] ?? $store->name;
+        $store->address = $content['address'] ?? $store->address;
+        $store->postalCode = $content['postal_code'] ?? $store->postalCode;
+        $store->city = $content['city'] ?? $store->city;
+        $store->isActive = $content['is_active'] ?? $store->isActive;
+
+        // Validation des nouvelles données
+        $violations = $this->validator->validate($store);
+        if (count($violations) > 0) {
+            $errors = [];
+            foreach ($violations as $violation) {
+                $errors[$violation->getPropertyPath()] = $violation->getMessage();
+            }
+            JsonResponse::createStandard($errors, 400, 'error')->send();
+        }
+
+        $this->storeRepository->update($store);
+        JsonResponse::createStandard($store->toArray(), 200)->send();
+    }
+
+    /**
+     * DELETE /api/stores/{id}
+     */
+    public function delete(int $id): void
+    {
+        $store = $this->storeRepository->find($id);
+
+        if (!$store) {
+            JsonResponse::createStandard(['message' => 'Magasin introuvable.'], 404, 'error')->send();
+        }
+
+        $this->storeRepository->delete($id);
+        JsonResponse::createStandard(['message' => 'Magasin supprimé avec succès.'], 200)->send();
+    }
 }

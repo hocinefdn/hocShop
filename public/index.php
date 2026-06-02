@@ -44,7 +44,8 @@ $container->set(\Symfony\Component\Validator\Validator\ValidatorInterface::class
 // 3. Routage avec Bramus Router
 $router = new \Bramus\Router\Router();
 
-// Exemple de Middleware Global ou de groupe pour l'authentification (Étape 3)
+// Exemple de Middleware Global ou de groupe pour l'authentification
+
 // $router->before('GET|POST|PUT|DELETE', '/api/.*', function () use ($container) {
 //     $request = $container->get(Request::class);
 //     $token = $request->headers->get('Authorization');
@@ -59,14 +60,29 @@ $router = new \Bramus\Router\Router();
 // Définition des routes CRUD Magasins
 $router->mount('/api/stores', function () use ($router, $container) {
 
-    // GET /api/stores
+    // GET /api/stores 
     $router->get('/', function () use ($container) {
         (new App\Controller\StoreController($container))->index();
     });
 
-    // POST /api/stores
+    // POST /api/stores 
     $router->post('/', function () use ($container) {
         (new App\Controller\StoreController($container))->create();
+    });
+
+    // GET /api/stores/{id}
+    $router->get('/(\d+)', function ($id) use ($container) {
+        (new App\Controller\StoreController($container))->show((int)$id);
+    });
+
+    // PUT /api/stores/{id} 
+    $router->put('/(\d+)', function ($id) use ($container) {
+        (new App\Controller\StoreController($container))->update((int)$id);
+    });
+
+    // DELETE /api/stores/{id} 
+    $router->delete('/(\d+)', function ($id) use ($container) {
+        (new App\Controller\StoreController($container))->delete((int)$id);
     });
 });
 
