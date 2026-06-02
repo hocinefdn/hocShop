@@ -10,7 +10,8 @@
 
 1. [Prérequis](#prérequis)
 2. [Installation & Démarrage](#installation--démarrage)
-3. [Qualité du code](#qualité-du-code)
+3. [Test 3 — API REST & Endpoints](#test-3-—-api-rest)
+4. [Qualité du code](#qualité-du-code)
 
 ---
 
@@ -48,7 +49,19 @@ docker-compose up -d
 docker-compose exec app composer install
 ```
 
----
+### 4. Initialiser la base de données
+
+```bash
+docker-compose exec db mysql -u root -proot wshop_db < database/schema.sql
+```
+
+> Le script crée les tables `users` et `stores`, et insère des données de test
+> (7 magasins sur plusieurs villes + 1 utilisateur admin).
+
+| Champ    | Valeur         |
+| -------- | -------------- |
+| Email    | admin@wshop.fr |
+| Password | password123    |
 
 ## Test 3 — API REST
 
