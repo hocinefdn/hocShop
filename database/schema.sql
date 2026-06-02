@@ -7,7 +7,7 @@ CREATE TABLE users (
 
 -- Insertion d'un utilisateur de test (password123 haché)
 INSERT INTO users (email, password) 
-VALUES ('hocine@wshop.fr', '$2y$12$RxN8F2/aZQDF0XEpjWbue.DO4njredx9xRU845TxYnOghzurK4/tW');
+VALUES ('admin@wshop.fr', '$2y$12$RxN8F2/aZQDF0XEpjWbue.DO4njredx9xRU845TxYnOghzurK4/tW');
 
 CREATE TABLE IF NOT EXISTS `stores` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
