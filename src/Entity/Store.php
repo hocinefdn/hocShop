@@ -27,6 +27,26 @@ class Store
         public ?string $createdAt = null
     ) {}
 
+
+
+    /**
+     * Active le magasin
+     */
+    public function activate(): self
+    {
+        $this->isActive = true;
+        return $this;
+    }
+
+    /**
+     * Désactive le magasin
+     */
+    public function deactivate(): self
+    {
+        $this->isActive = false;
+        return $this;
+    }
+
     public function toArray(): array
     {
         return [
