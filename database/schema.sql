@@ -1,3 +1,14 @@
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insertion d'un utilisateur de test (password123 haché)
+INSERT INTO users (email, password) 
+VALUES ('hocine@wshop.fr', '$2y$10$vN9fPZfE.F6vR1kI7fWpDOnWw9YV/UvV6zRkeE3g82P8mQ7H24W6.');
+
 CREATE TABLE IF NOT EXISTS `stores` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(255) NOT NULL,

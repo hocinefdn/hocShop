@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Controller;
+namespace App\Store;
 
 use App\Core\Container;
 use App\Core\JsonResponse;
-use App\Entity\Store;
-use App\Repository\StoreRepository;
+use App\Store\Store;
+use App\Store\StoreRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

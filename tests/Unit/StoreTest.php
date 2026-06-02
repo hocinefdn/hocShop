@@ -2,7 +2,7 @@
 
 namespace App\Tests\Unit;
 
-use App\Entity\Store;
+use App\Store\Store;
 use PHPUnit\Framework\TestCase;
 
 class StoreTest extends TestCase

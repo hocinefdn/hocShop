@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository;
+namespace App\Store;
 
-use App\Entity\Store;
+use App\Store\Store;
 use PDO;
 
 class StoreRepository

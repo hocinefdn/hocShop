@@ -62,27 +62,27 @@ $router->mount('/api/stores', function () use ($router, $container) {
 
     // GET /api/stores 
     $router->get('/', function () use ($container) {
-        (new App\Controller\StoreController($container))->index();
+        (new App\Store\StoreController($container))->index();
     });
 
     // POST /api/stores 
     $router->post('/', function () use ($container) {
-        (new App\Controller\StoreController($container))->create();
+        (new App\Store\StoreController($container))->create();
     });
 
     // GET /api/stores/{id}
     $router->get('/(\d+)', function ($id) use ($container) {
-        (new App\Controller\StoreController($container))->show((int)$id);
+        (new App\Store\StoreController($container))->show((int)$id);
     });
 
     // PUT /api/stores/{id} 
     $router->put('/(\d+)', function ($id) use ($container) {
-        (new App\Controller\StoreController($container))->update((int)$id);
+        (new App\Store\StoreController($container))->update((int)$id);
     });
 
     // DELETE /api/stores/{id} 
     $router->delete('/(\d+)', function ($id) use ($container) {
-        (new App\Controller\StoreController($container))->delete((int)$id);
+        (new App\Store\StoreController($container))->delete((int)$id);
     });
 });
 

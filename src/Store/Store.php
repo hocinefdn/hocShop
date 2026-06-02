@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Store;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
